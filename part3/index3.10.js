@@ -1,17 +1,12 @@
-require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
 
-const Person = require('./models/person')
-
 app.use(express.json())
 app.use(morgan('tiny'))
 app.use(cors())
 app.use(express.static('dist'))
-
-const password = process.argv[2]
 
 let persons = [
     {
@@ -52,13 +47,13 @@ app.get('/', (request, response) => {
 
   app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
-    Person.findByID(id).then(person => {
-      if (person) {
-        response.json(person)
-      }
-    })
+    const person = persons.find(persons => persons.id === id)
 
-    response.status(404).end()
+    if (person) {
+        response.json(person)
+    } else {
+        response.status(404).end()
+    }
   })
 
   app.post('/api/persons', (request, response) => {
@@ -76,11 +71,11 @@ app.get('/', (request, response) => {
         })
     }
 
-    const person = new Person({
+    const person = {
       name: body.name,
       number: body.number,
       id: generateId()
-    })
+    }
 
     persons = persons.concat(person)
 
