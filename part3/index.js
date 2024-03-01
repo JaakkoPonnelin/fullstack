@@ -13,29 +13,6 @@ app.use(express.static('dist'))
 
 const password = process.argv[2]
 
-let persons = [
-    {
-      name: "Arto Hellas",
-      number: "040-123456",
-      id: 1
-    },
-    {
-      name: "Ada Lovelace",
-      number: "39-44-5323523",
-      id: 2
-    },
-    {
-      name: "Dan Abramov",
-      number: "12-43-234345",
-      id: 3
-    },
-    {
-      name: "Mary Poppendieck",
-      number: "39-23-6423122",
-      id: 4
-    }
-  ]
-
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
   })
@@ -47,7 +24,13 @@ app.get('/', (request, response) => {
   })
 
   app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(person => {
+      if (person) {
+        response.json(person)
+      }
+    })
+
+    response.status(404).end()
   })
 
   app.get('/api/persons/:id', (request, response) => {
@@ -70,7 +53,7 @@ app.get('/', (request, response) => {
       })
     }
 
-    if (persons.some(person => person.name === body.name)) {
+    if (body.some(person => person.name === body.name)) {
         return response.status(400).json({
             error: 'name is already in Phonebook'
         })
@@ -82,9 +65,9 @@ app.get('/', (request, response) => {
       id: generateId()
     })
 
-    persons = persons.concat(person)
-
-    response.json(person)
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
   })
 
   app.delete('/api/persons/:id', (request, response) => {
