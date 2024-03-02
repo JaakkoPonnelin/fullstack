@@ -58,7 +58,7 @@ app.get('/', (request, response) => {
 
   app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
-    Person.findByIdAndRemove(id).then(() => response.status(204).end())
+    Person.findByIdAndDelete(id).then(() => response.status(204).end())
   })
   
   const PORT = process.env.PORT || 3001
