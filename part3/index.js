@@ -25,23 +25,15 @@ app.get('/', (request, response) => {
 
   app.get('/api/persons', (request, response) => {
     Person.find({}).then(person => {
-      if (person) {
-        response.json(person)
-      }
+      response.json(person)
     })
-
-    response.status(404).end()
   })
 
   app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
-    Person.findByID(id).then(person => {
-      if (person) {
-        response.json(person)
-      }
+    Person.findById(id).then(person => {
+      response.json(person)
     })
-
-    response.status(404).end()
   })
 
   app.post('/api/persons', (request, response) => {
@@ -51,12 +43,6 @@ app.get('/', (request, response) => {
       return response.status(400).json({
         error: 'name and/or number missing'
       })
-    }
-
-    if (body.some(person => person.name === body.name)) {
-        return response.status(400).json({
-            error: 'name is already in Phonebook'
-        })
     }
 
     const person = new Person({
